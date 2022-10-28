@@ -24,6 +24,7 @@ In memory database for the last 100 blocks:
 
 */
 
+let lastBlock = null;
 let inMemoryDatabase = {
   blocks: {},
   functionSignatures: {},
@@ -32,6 +33,7 @@ let inMemoryDatabase = {
 const provider = new ethers.providers.JsonRpcProvider(ETH_MAINNET_RPC_URL);
 
 provider.on("block", async (blockNumber) => {
+  lastBlock = blockNumber;
   const blockData = await provider.getBlock(blockNumber);
   const funcSigs = await Promise.all(
     blockData.transactions.map((x) =>
@@ -108,7 +110,10 @@ app.use(cors());
 app.use(morgan("common"));
 
 app.get("/", (req, res) => {
-  res.json(inMemoryDatabase.functionSignatures);
+  res.json({
+    lastBlock: lastBlock,
+    data: inMemoryDatabase.functionSignatures,
+  });
 });
 
 app.listen(port, () => {

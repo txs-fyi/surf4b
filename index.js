@@ -96,6 +96,8 @@ provider.on("block", async (blockNumber) => {
         }
       }
     }
+
+    delete inMemoryDatabase.blocks[lastStaleBlockNumber];
   }
 });
 
